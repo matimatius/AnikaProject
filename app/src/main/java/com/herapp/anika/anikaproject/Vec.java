@@ -12,6 +12,15 @@ public class Vec {
         return  copy;
     }
 
+    static PointF getDivided(PointF p, float k){
+        PointF point = new PointF(p.x, p.y);
+        if(k != 0) {
+            point.x /= k;
+            point.y /= k;
+        }
+        return point;
+    }
+
     static float distance(PointF p1, PointF p2){
         return (float)Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
     }

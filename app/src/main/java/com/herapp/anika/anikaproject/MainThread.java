@@ -8,7 +8,7 @@ import android.view.SurfaceHolder;
  */
 
 public class MainThread extends Thread{
-    private int FPS = 60;
+    private int FPS = 120;
     private SurfaceHolder surfaceHolder;
     private GamePanel gamePanel;
     boolean running = true;
