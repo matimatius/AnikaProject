@@ -45,6 +45,7 @@ public class Player {
 
     boolean checkObstacle(Segment.Obstacle o){
         float v = vel.length();
+        o.computeCollisionPoints();
         if(Vec.distance(pos, o.collisionPoints[0]) < radius || Vec.distance(pos, o.collisionPoints[0]) < v)
             return true;
         if(Vec.distance(pos, o.collisionPoints[1]) < radius || Vec.distance(pos, o.collisionPoints[1]) < v)

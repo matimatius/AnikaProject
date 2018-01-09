@@ -27,8 +27,11 @@ class LineManager{
     Line lines[] = new Line[3];
     private static float alignOffset = 200;
     private float alignOffsetChange = 0.025f;
+    static Paint p = new Paint();
 
     LineManager(){
+        p.setColor(Color.BLACK);
+        p.setStyle(Style.FILL); 
         PointF[] endPoints = new PointF[3];
         endPoints[0] = new PointF(drawX, (float)drawY / 4.f + alignOffset);
         endPoints[1] = new PointF(drawX, (float)drawY / 2.f + alignOffset);
@@ -66,6 +69,7 @@ class LineManager{
     }
 
     void draw(Canvas canvas){
+        canvas.drawPaint(p); 
         for(Line l : lines){
             l.draw(canvas);
         }

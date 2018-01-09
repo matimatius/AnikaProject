@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 
+import static com.herapp.anika.anikaproject.GamePanel.drawX;
 import java.util.ArrayList;
 
 /**
@@ -26,10 +27,10 @@ public class Segment {
             PointF w = new PointF(width, 0);
             PointF h = new PointF(0, height);
             //rotation
-            newW.x = (float)(w.x * Math.cos(angle) - w.y * Math.sin(angle));
-            newW.y = (float)-(w.x * Math.sin(angle) + w.y * Math.cos(angle));
-            newH.x = (float)(h.x * Math.cos(angle) - h.y * Math.sin(angle));
-            newH.y = (float)-(h.x * Math.sin(angle) + h.y * Math.cos(angle));
+            newW.x = (float)(w.x * cosAngle - w.y * sinAngle);
+            newW.y = (float)-(w.x * sinAngle + w.y * cosAngle);
+            newH.x = (float)(h.x * cosAngle - h.y * sinAngle);
+            newH.y = (float)-(h.x * sinAngle + h.y * cosAngle);
         }
 
         void computeCollisionPoints(){
@@ -42,27 +43,35 @@ public class Segment {
 
         void update(){
             Vec.addVec(pos, vel);
-            computeCollisionPoints();
         }
 
         void draw(Canvas canvas){
-            Paint p = new Paint();
-            p.setColor(Color.GREEN);
-            canvas.save();
-            canvas.rotate((float)Math.toDegrees(-angle), pos.x, pos.y);
-            canvas.drawRect(pos.x,pos.y - height, pos.x + width, pos.y, p);
-            canvas.restore();
+            if(pos.x > -70 && pos.x < drawX){
+                canvas.save();
+                canvas.rotate((float)Math.toDegrees(-angle), pos.x, pos.y);
+                canvas.drawRect(pos.x,pos.y - height, pos.x + width, pos.y, obstaclePaint);
+                canvas.restore();
+            }   
         }
     }
 
     float angle;
+    float sinAngle;
+    float cosAngle;
     PointF pos;
     PointF vel;
     PointF alignment;
     float width;
     ArrayList <Obstacle> obstacles= new ArrayList<>();
+    static Paint p = new Paint();
+    Paint obstaclePaint = new Paint();
 
     Segment(PointF pos, PointF alignment, float width){
+        p.setColor(Color.BLUE);
+        obstaclePaint.setColor(Color.GREEN);
+        p.setStrokeWidth(10);
+        sinAngle = Math.sin(angle);
+        cosAngle = Math.cos(angle);
         this.width = width;
         this.pos = pos;
         this.alignment = alignment;
@@ -76,7 +85,7 @@ public class Segment {
         angle = alignment.y / alignment.x;
         angle = (float)Math.atan(angle);
         angle = -angle;
-        //test
+        //initial obst at 1/4 length of the segment - to do: make this pretty much random
         PointF oPoint = Vec.getAdded(pos, Vec.getDivided(alignment, 4));
         Obstacle o = new Obstacle(oPoint);
         obstacles.add(o);
@@ -96,8 +105,7 @@ public class Segment {
         vel.y *= -speed;
     }
 
-    void update(float speed){
-        computeVel(speed);
+    void update(){
         for(Obstacle o : obstacles){
             o.update();
         }
@@ -105,10 +113,6 @@ public class Segment {
     }
 
     void draw(Canvas canvas) {
-        Paint p = new Paint();
-        p.setColor(Color.BLUE);
-        p.setTextSize(40);
-        p.setStrokeWidth(10);
         for(Obstacle o : obstacles){
             o.draw(canvas);
         }
