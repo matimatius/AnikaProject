@@ -26,7 +26,7 @@ import static com.herapp.anika.anikaproject.GamePanel.drawY;
 class LineManager{
     Line lines[] = new Line[3];
     private static float alignOffset = 200;
-    private float alignOffsetChange = 0.1f;
+    private float alignOffsetChange = 0.025f;
 
     LineManager(){
         PointF[] endPoints = new PointF[3];
@@ -40,6 +40,7 @@ class LineManager{
 
         lines[0] = new Line(startPoints[0], endPoints[0]);
         lines[1] = new Line(startPoints[1], endPoints[1]);
+        lines[1].segments.get(0).obstacles.clear();
         lines[2] = new Line(startPoints[2], endPoints[2]);
     }
 
@@ -165,10 +166,14 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
+    void restart(){
+        manager = new LineManager();
+        player = new Player(manager.lines);
+    }
+
     @Override
     public void surfaceCreated(SurfaceHolder holder)  {
-        manager = new LineManager();
-        player = new Player();
+        restart();
 
         Canvas c;
         c = getHolder().lockCanvas();
@@ -193,6 +198,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     public void update() {
         manager.update();
         player.update(manager.lines);
+        if(player.dead()){
+            restart();
+        }
     }
 
     @Override

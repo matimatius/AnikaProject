@@ -19,8 +19,10 @@ public class Player {
     int jumps = 2;
     float radius = 27;
     Paint p = new Paint();
+    Line lines[];
 
-    Player(){
+    Player(Line lines[]){
+        this.lines = lines;
         p.setColor(Color.CYAN);
     }
 
@@ -39,6 +41,35 @@ public class Player {
         }else{
             return false;
         }
+    }
+
+    boolean checkObstacle(Segment.Obstacle o){
+        float v = vel.length();
+        if(Vec.distance(pos, o.collisionPoints[0]) < radius || Vec.distance(pos, o.collisionPoints[0]) < v)
+            return true;
+        if(Vec.distance(pos, o.collisionPoints[1]) < radius || Vec.distance(pos, o.collisionPoints[1]) < v)
+            return true;
+        if(Vec.distance(pos, o.collisionPoints[2]) < radius || Vec.distance(pos, o.collisionPoints[2]) < v)
+            return true;
+        if(Vec.distance(pos, o.collisionPoints[3]) < radius || Vec.distance(pos, o.collisionPoints[3]) < v)
+            return true;
+        return false;
+    }
+
+    boolean dead(){
+        if(pos.y > drawY)
+            return true;
+
+        for(Line l : lines){
+            for(Segment s : l.segments){
+                for(Segment.Obstacle o : s.obstacles){
+                    if(checkObstacle(o)){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
    private boolean collision(Line lines[]){

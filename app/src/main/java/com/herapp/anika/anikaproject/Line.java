@@ -30,7 +30,7 @@ public class Line {
     }
 
     private void computeSpeed(){
-        speed = (pos.y - endPoint.y) / 80.f * 1.4f;
+        speed = (pos.y - endPoint.y) / 40.f;
     }
 
     Line(PointF pos, PointF endPoint){
@@ -50,11 +50,7 @@ public class Line {
 
     boolean add(){
         if(segments.size() > 0) {
-            if (segments.get(segments.size() - 1).getLastPoint().x < drawX - gap){
-                return true;
-            }else{
-                return false;
-            }
+            return segments.get(segments.size() - 1).getLastPoint().x < drawX - gap;
         }else{
             return true;
         }
@@ -74,7 +70,6 @@ public class Line {
     }
 
     void addSegment(Segment s){
-        computeGap();
         segments.add(s);
     }
 
