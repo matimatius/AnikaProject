@@ -20,6 +20,8 @@ public class Player {
     float radius = 27;
     Paint p = new Paint();
     Line lines[];
+    boolean dead = false;
+
 
     Player(Line lines[]){
         this.lines = lines;
@@ -43,43 +45,42 @@ public class Player {
         }
     }
 
+    private boolean checkObstaclePoints(Segment.Obstacle o,float dist){
+        if(pos.y > drawY + 150)
+            return true;
+        if(Vec.distance(pos, o.collisionPoints[0]) < dist)
+            return true;
+        if(Vec.distance(pos, o.collisionPoints[1]) < dist)
+            return true;
+        if(Vec.distance(pos, o.collisionPoints[2]) < dist)
+            return true;
+        if(Vec.distance(pos, o.collisionPoints[3]) < dist)
+            return true;
+        return false;
+    }
+
     boolean checkObstacle(Segment.Obstacle o){
         float v = vel.length();
         o.computeCollisionPoints();
-        if(Vec.distance(pos, o.collisionPoints[0]) < radius || Vec.distance(pos, o.collisionPoints[0]) < v)
-            return true;
-        if(Vec.distance(pos, o.collisionPoints[1]) < radius || Vec.distance(pos, o.collisionPoints[1]) < v)
-            return true;
-        if(Vec.distance(pos, o.collisionPoints[2]) < radius || Vec.distance(pos, o.collisionPoints[2]) < v)
-            return true;
-        if(Vec.distance(pos, o.collisionPoints[3]) < radius || Vec.distance(pos, o.collisionPoints[3]) < v)
-            return true;
-        return false;
-    }
-
-    boolean dead(){
-        if(pos.y > drawY)
-            return true;
-
-        for(Line l : lines){
-            for(Segment s : l.segments){
-                for(Segment.Obstacle o : s.obstacles){
-                    if(checkObstacle(o)){
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        if(v > radius)
+            return checkObstaclePoints(o, v);
+        return checkObstaclePoints(o, radius);
     }
 
    private boolean collision(Line lines[]){
-       for (Line line : lines)
-           for (Segment s : line.segments)
-               if (s.pos.x <= pos.x && s.getLastPoint().x >= pos.x)
+       boolean returnValue = false;
+        for (Line line : lines)
+           for (Segment s : line.segments) {
+               if (s.pos.x <= pos.x && s.getLastPoint().x >= pos.x) {
+                   for(Segment.Obstacle o : s.obstacles){
+                       if(checkObstacle(o))
+                           dead = true;
+                   }
                    if (slopeDetection(s))
-                       return true;
-        return false;
+                       returnValue = true;
+               }
+           }
+        return returnValue;
     }
 
     void jump(){
@@ -91,6 +92,16 @@ public class Player {
 
     void update(Line lines[]){
         if(vel.y < 0){
+            for(Line l : lines){
+                for(Segment s : l.segments){
+                    if (s.pos.x <= pos.x && s.getLastPoint().x >= pos.x) {
+                        for(Segment.Obstacle o : s.obstacles){
+                            if(checkObstacle(o))
+                                dead = true;
+                        }
+                    }
+                }
+            }
             p.setColor(Color.RED);
             Vec.addVec(vel, gravity);
             Vec.addVec(pos, vel);

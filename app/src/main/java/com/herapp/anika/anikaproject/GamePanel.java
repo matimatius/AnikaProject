@@ -31,7 +31,7 @@ class LineManager{
 
     LineManager(){
         p.setColor(Color.BLACK);
-        p.setStyle(Style.FILL); 
+        p.setStyle(Paint.Style.FILL);
         PointF[] endPoints = new PointF[3];
         endPoints[0] = new PointF(drawX, (float)drawY / 4.f + alignOffset);
         endPoints[1] = new PointF(drawX, (float)drawY / 2.f + alignOffset);
@@ -202,7 +202,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     public void update() {
         manager.update();
         player.update(manager.lines);
-        if(player.dead()){
+        if(player.dead){
             restart();
         }
     }

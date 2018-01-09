@@ -22,13 +22,18 @@ public class MainThread extends Thread{
 
     @Override
     public void run(){
-        long startTime;
+        int frames = 0;
+        long startTime = 0;
         long timeMilisec;
-        long waitTime;
+        long waitTime = 0;
         long targetTime = 1000 / FPS;
+        long fixedWaitTime = 0;
+        boolean set = false;
 
         while(running){
-            startTime = System.nanoTime();
+            if(!set)
+                startTime = System.nanoTime();
+
             canvas = null;
             //try the canvas
             try{
@@ -49,11 +54,24 @@ public class MainThread extends Thread{
                 }
             }
 
-            timeMilisec = (System.nanoTime() - startTime) / 1000000;
-            waitTime = targetTime - timeMilisec;
-
+            if(!set) {
+                timeMilisec = (System.nanoTime() - startTime) / 1000000;
+                waitTime = targetTime - timeMilisec;
+            }
+            fixedWaitTime += waitTime;
+            if(frames < FPS)
+                frames++;
+            else{
+                if(!set){
+                    set = true;
+                    fixedWaitTime /= FPS;
+                }
+            }
             try{
-                this.sleep(waitTime);
+                if(!set)
+                    this.sleep(waitTime);
+                else
+                    this.sleep(fixedWaitTime);
             }catch (Exception e){}
         }
     }

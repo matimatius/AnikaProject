@@ -71,6 +71,7 @@ public class Line {
     }
 
     void addSegment(Segment s){
+        s.computeVel(speed);
         segments.add(s);
     }
 
