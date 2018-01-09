@@ -8,6 +8,7 @@ import android.graphics.PointF;
 
 import static com.herapp.anika.anikaproject.GamePanel.drawX;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by Mati on 29.12.2017.
@@ -73,8 +74,11 @@ public class Segment {
     ArrayList <Obstacle> obstacles= new ArrayList<>();
     Paint p = new Paint();
     private Paint obstaclePaint = new Paint();
+    private ArrayList <Coin> coins = new ArrayList<>();
 
     Segment(PointF pos, PointF alignment, float width){
+        Random random = new Random();
+        int randCoinAmount = random.nextInt(3); //from 0 to 3
         p.setColor(Color.BLUE);
         obstaclePaint.setColor(Color.GREEN);
         p.setStrokeWidth(10);
@@ -95,12 +99,46 @@ public class Segment {
         PointF oPoint = Vec.getAdded(pos, Vec.getDivided(alignment, 4));
         Obstacle o = new Obstacle(oPoint);
         obstacles.add(o);
+        for(int i =0; i < randCoinAmount; i++){
+            addCoin();
+        }
+    }
+
+    boolean checkForCoin(PointF pos, float radius){
+        for(Coin c : coins){
+            if(Vec.distance(pos, new PointF(c.pos.x, c.pos.y + c.offset)) < radius + c.radius){
+                coins.remove(c);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void addCoin(){
+        Random r = new Random();
+        boolean finished = false;
+        PointF coinPoint = new PointF();
+        while(!finished){
+            int bound = 20;
+            int div = r.nextInt(bound);
+            coinPoint = Vec.getCopy(alignment);
+            Vec.divide(coinPoint, bound);
+            Vec.mult(coinPoint, div);
+            Vec.addVec(coinPoint, pos);
+            finished = true;
+            for(Obstacle o : obstacles){
+                o.computeCollisionPoints();
+                if(Vec.distance(coinPoint, o.collisionPoints[1]) < o.width + 20 && Vec.distance(coinPoint, o.collisionPoints[3]) < o.width + 20)
+                    finished = false;
+            }
+        }
+        Coin coin = new Coin(coinPoint);
+        coin.pos.y -= coin.radius * 3;
+        coins.add(coin);
     }
 
     PointF getLastPoint(){
-        PointF last = Vec.getCopy(pos);
-        Vec.addVec(last, alignment);
-        return last;
+        return Vec.getAdded(pos, alignment);
     }
 
     void computeVel(float speed){
@@ -115,12 +153,18 @@ public class Segment {
         for(Obstacle o : obstacles){
             o.update();
         }
+        for(Coin c : coins){
+            c.update(vel);
+        }
         Vec.addVec(pos, vel);
     }
 
     void draw(Canvas canvas) {
         for(Obstacle o : obstacles){
             o.draw(canvas);
+        }
+        for(Coin c : coins){
+            c.draw(canvas);
         }
         canvas.drawLine(pos.x, pos.y, getLastPoint().x, getLastPoint().y, p);
     }

@@ -36,7 +36,7 @@ public class Line {
     Line(PointF pos, PointF endPoint){
         this.endPoint = endPoint;
         this.pos = pos;
-        this.alignment = Vec.getSubstracted(endPoint, pos);
+        this.alignment = Vec.getSubtracted(endPoint, pos);
         computeSpeed();
         computeGap();
         Segment startSegment = new Segment(Vec.getCopy(pos), Vec.getCopy(alignment), alignment.length());
@@ -61,7 +61,7 @@ public class Line {
 
     void update(float offsetChange){
         this.endPoint.y += offsetChange;
-        this.alignment = Vec.getSubstracted(endPoint, pos);
+        this.alignment = Vec.getSubtracted(endPoint, pos);
         for(Segment s : segments){
             s.update();
             if(s.getLastPoint().x < 0){

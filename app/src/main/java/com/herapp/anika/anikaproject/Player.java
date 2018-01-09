@@ -20,12 +20,14 @@ public class Player {
     float radius = 27;
     Paint p = new Paint();
     Line lines[];
+    int coins = 0;
     boolean dead = false;
 
 
     Player(Line lines[]){
         this.lines = lines;
         p.setColor(Color.CYAN);
+        p.setTextSize(40);
     }
 
     private boolean slopeDetection(Segment s){
@@ -75,6 +77,9 @@ public class Player {
                    for(Segment.Obstacle o : s.obstacles){
                        if(checkObstacle(o))
                            dead = true;
+                       if(s.checkForCoin(pos, radius)){
+                           coins++;
+                       }
                    }
                    if (slopeDetection(s))
                        returnValue = true;
@@ -98,6 +103,9 @@ public class Player {
                         for(Segment.Obstacle o : s.obstacles){
                             if(checkObstacle(o))
                                 dead = true;
+                            if(s.checkForCoin(pos, radius)){
+                                coins++;
+                            }
                         }
                     }
                 }
@@ -120,6 +128,7 @@ public class Player {
     }
 
     void draw(Canvas canvas){
+        canvas.drawText("COINS: " + Integer.toString(coins), 50, 50, p);
         canvas.drawCircle(pos.x, pos.y, radius, p);
     }
 

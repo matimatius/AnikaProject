@@ -44,11 +44,23 @@ public class Vec {
         return newPoint;
     }
 
-    static PointF getSubstracted(PointF p1, PointF p2){
+    static PointF getSubtracted(PointF p1, PointF p2){
         PointF newPoint = new PointF(p1.x, p1.y);
         newPoint.x -= p2.x;
         newPoint.y -= p2.y;
         return newPoint;
+    }
+
+    static void divide(PointF point, float k){
+        if(k != 0) {
+            point.x /= k;
+            point.y /= k;
+        }
+    }
+
+    static void mult(PointF point, float k){
+            point.x *= k;
+            point.y *= k;
     }
 
     static void addVec(PointF p1, PointF p2){
