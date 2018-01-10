@@ -15,7 +15,7 @@ public class Player {
     PointF pos = new PointF(150, drawY / 2 - 100);
     PointF vel = new PointF(0, 0);
     static float jumpForce = -12;
-    static PointF gravity = new PointF(0, 0.44f);
+    static PointF gravity = new PointF(0, 0.44f * 120);
     int jumps = 2;
     float radius = 27;
     Paint p = new Paint();
@@ -95,7 +95,7 @@ public class Player {
         }
     }
 
-    void update(Line lines[]){
+    void update(Line lines[], long deltaTime){
         if(vel.y < 0){
             for(Line l : lines){
                 for(Segment s : l.segments){
@@ -111,14 +111,18 @@ public class Player {
                 }
             }
             p.setColor(Color.RED);
-            Vec.addVec(vel, gravity);
-            Vec.addVec(pos, vel);
+            //Vec.addVec(vel, gravity);
+            //Vec.addVec(pos, vel);
+            vel.y += gravity.y * deltaTime;
+            pos.y += vel.y;
         }
         else {
             if (!collision(lines)) {
                 p.setColor(Color.RED);
-                Vec.addVec(vel, gravity);
-                Vec.addVec(pos, vel);
+//                Vec.addVec(vel, gravity);
+//                Vec.addVec(pos, vel);
+                vel.y += gravity.y * deltaTime;
+                pos.y += vel.y;
             } else {
                 vel.y = 0;
                 jumps = 2;

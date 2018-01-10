@@ -26,7 +26,7 @@ import static com.herapp.anika.anikaproject.GamePanel.drawY;
 class LineManager{
     Line lines[] = new Line[3];
     private static float alignOffset = 200;
-    private float alignOffsetChange = 0.025f;
+    private float alignOffsetChange = 0.025f * 120;
     static Paint p = new Paint();
 
     LineManager(){
@@ -52,11 +52,11 @@ class LineManager{
         return drawX + drawX * r.nextFloat();
     }
 
-    void update(){
+    void update(long deltaTime){
         boolean add[] = {false, false, false};
 
         for(int i =0; i < 3; i++){
-            lines[i].update(alignOffsetChange);
+            lines[i].update(alignOffsetChange, deltaTime);
             add[i] = lines[i].add();
         }
 
@@ -199,9 +199,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         return true;
     }
 
-    public void update() {
-        manager.update();
-        player.update(manager.lines);
+    public void update(long deltaTime) {
+        manager.update(deltaTime);
+        player.update(manager.lines, deltaTime);
         if(player.dead){
             restart();
         }

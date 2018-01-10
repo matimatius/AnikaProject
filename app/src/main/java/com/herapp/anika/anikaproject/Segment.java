@@ -50,8 +50,8 @@ public class Segment {
         }
 
         void update(){
-            Vec.addVec(pos, vel);
-            path.offset(vel.x, vel.y);
+            Vec.addVec(pos, deltaVel);
+            path.offset(deltaVel.x, deltaVel.y);
         }
 
         void draw(Canvas canvas){
@@ -70,6 +70,7 @@ public class Segment {
     private float cosAngle;
     PointF pos;
     PointF vel;
+    PointF deltaVel = new PointF();
     PointF alignment;
     ArrayList <Obstacle> obstacles= new ArrayList<>();
     Paint p = new Paint();
@@ -149,14 +150,15 @@ public class Segment {
         vel.y *= -speed;
     }
 
-    void update(){
+    void update(long deltaTime){
+        deltaVel = Vec.getMult(vel, deltaTime);
         for(Obstacle o : obstacles){
             o.update();
         }
         for(Coin c : coins){
-            c.update(vel);
+            c.update(deltaVel);
         }
-        Vec.addVec(pos, vel);
+        Vec.addVec(pos, deltaVel);
     }
 
     void draw(Canvas canvas) {

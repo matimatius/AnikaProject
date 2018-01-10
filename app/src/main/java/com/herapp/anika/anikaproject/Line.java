@@ -30,7 +30,7 @@ public class Line {
     }
 
     private void computeSpeed(){
-        speed = (pos.y - endPoint.y) / 40.f;
+        speed = (pos.y - endPoint.y) / 40.f * 120;
     }
 
     Line(PointF pos, PointF endPoint){
@@ -59,11 +59,11 @@ public class Line {
         }
     }
 
-    void update(float offsetChange){
-        this.endPoint.y += offsetChange;
+    void update(float offsetChange, long deltaTime){
+        this.endPoint.y += offsetChange * deltaTime;
         this.alignment = Vec.getSubtracted(endPoint, pos);
         for(Segment s : segments){
-            s.update();
+            s.update(deltaTime);
             if(s.getLastPoint().x < 0){
                 segments.remove(s);
             }
