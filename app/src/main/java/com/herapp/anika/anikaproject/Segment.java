@@ -150,8 +150,8 @@ public class Segment {
         vel.y *= -speed;
     }
 
-    void update(long deltaTime){
-        deltaVel = Vec.getMult(vel, deltaTime);
+    void update(double deltaTime){
+        deltaVel = Vec.getMult(vel, (float)deltaTime);
         for(Obstacle o : obstacles){
             o.update();
         }

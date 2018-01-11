@@ -64,10 +64,10 @@ public class Vec {
     }
     
     static PointF getMult(PointF p, float k){
-            PointF point = new Point(p.x, p.y);
+            PointF point = new PointF(p.x, p.y);
             point.x *= k;
             point.y *= k;
-            return point;l
+            return point;
     }
 
     static void addVec(PointF p1, PointF p2){

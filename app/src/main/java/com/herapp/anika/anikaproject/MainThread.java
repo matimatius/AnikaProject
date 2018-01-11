@@ -12,7 +12,8 @@ public class MainThread extends Thread{
     private GamePanel gamePanel;
     boolean running = true;
     private static Canvas canvas;
-    long timeMilisec = 0;
+    double prevTime;
+    double curTime = 0;
 
     MainThread(SurfaceHolder holder, GamePanel gamePanel){
         super();
@@ -22,32 +23,31 @@ public class MainThread extends Thread{
 
     @Override
     public void run(){
-        long startTime = 0;
+        curTime = System.currentTimeMillis();
 
         while(running){
-            startTime = System.nanoTime();
+            prevTime = curTime;
+            curTime = System.nanoTime();
+
+            double dt = (curTime - prevTime) / 100;
+            if(dt > 0.22)
+                dt = 22;
 
             canvas = null;
             //try the canvas
             try{
                 canvas = this.surfaceHolder.lockCanvas();
-                synchronized (surfaceHolder){
-                    this.gamePanel.update(timeMilisec);
-                    this.gamePanel.draw(canvas);
-                }
+                this.gamePanel.update(dt);
+                this.gamePanel.draw(canvas);
+
             }catch (Exception e){}
 
             finally{
                 if(canvas!=null)
                 {
-                    try {
-                        surfaceHolder.unlockCanvasAndPost(canvas);
-                    }
-                    catch(Exception e){e.printStackTrace();}
+                    surfaceHolder.unlockCanvasAndPost(canvas);
                 }
             }
-            //to do check if milisec or sec
-            timeMilisec = (System.nanoTime() - startTime) / 1000000000;
         }
      }
 }

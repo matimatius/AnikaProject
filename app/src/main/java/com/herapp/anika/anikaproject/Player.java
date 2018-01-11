@@ -95,7 +95,7 @@ public class Player {
         }
     }
 
-    void update(Line lines[], long deltaTime){
+    void update(Line lines[], double deltaTime){
         if(vel.y < 0){
             for(Line l : lines){
                 for(Segment s : l.segments){

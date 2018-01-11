@@ -59,7 +59,7 @@ public class Line {
         }
     }
 
-    void update(float offsetChange, long deltaTime){
+    void update(float offsetChange, double deltaTime){
         this.endPoint.y += offsetChange * deltaTime;
         this.alignment = Vec.getSubtracted(endPoint, pos);
         for(Segment s : segments){
