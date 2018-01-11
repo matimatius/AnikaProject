@@ -30,7 +30,7 @@ public class Player {
         p.setTextSize(40);
     }
 
-    private boolean slopeDetection(Segment s){
+    private boolean slopeDetection(Segment s, double deltaTime){
         float d;
         float slope = (s.getLastPoint().y - s.pos.y) / (s.getLastPoint().x - s.pos.x);
         PointF point = Vec.getCopy(s.pos);
@@ -39,7 +39,7 @@ public class Player {
         point.x = pos.x;
         point.y = newY;
         d = Vec.distance(pos, point);
-        if(d <= vel.y || d <= radius / 3.f) {
+        if(d <= vel.y * deltaTime|| d <= radius / 3.f) {
             pos = point;
             return true;
         }else{
@@ -77,7 +77,7 @@ public class Player {
                            coins++;
                        }
                    }
-                   if (slopeDetection(s))
+                   if (slopeDetection(s, deltaTime))
                        returnValue = true;
                }
            }

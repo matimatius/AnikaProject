@@ -53,20 +53,14 @@ public class Segment {
             collisionPoints[7] = Vec.getAdded(pos, Vec.getDivided(newH, 2));
         }
 
-        Path p = new Path();
         void update(){
             Vec.addVec(pos, deltaVel);
             path.offset(deltaVel.x, deltaVel.y);
-            p.reset();
-            p.moveTo(collisionPoints[0].x, collisionPoints[0].y);
-            p.lineTo(collisionPoints[1].x, collisionPoints[1].y);
-            p.lineTo(collisionPoints[3].x, collisionPoints[3].y);
-            p.lineTo(collisionPoints[2].x, collisionPoints[2].y);
         }
 
         void draw(Canvas canvas){
             if(pos.x > -70 && pos.x < drawX){
-                canvas.drawPath(p, obstaclePaint);
+                canvas.drawPath(path, obstaclePaint);
             }   
         }
     }
