@@ -26,12 +26,9 @@ import static com.herapp.anika.anikaproject.GamePanel.drawY;
 class LineManager{
     Line lines[] = new Line[3];
     private static float alignOffset = 200;
-    private float alignOffsetChange = 0.025f;
-    static Paint p = new Paint();
+    private float alignOffsetChange = 0.05f;
 
     LineManager(){
-        p.setColor(Color.BLACK);
-        p.setStyle(Paint.Style.FILL);
         PointF[] endPoints = new PointF[3];
         endPoints[0] = new PointF(drawX, (float)drawY / 4.f + alignOffset);
         endPoints[1] = new PointF(drawX, (float)drawY / 2.f + alignOffset);
@@ -43,8 +40,12 @@ class LineManager{
 
         lines[0] = new Line(startPoints[0], endPoints[0]);
         lines[1] = new Line(startPoints[1], endPoints[1]);
-        lines[1].segments.get(0).obstacles.clear();
         lines[2] = new Line(startPoints[2], endPoints[2]);
+
+        for(int i =0; i < 3; i++){
+            lines[i].segments.get(0).obstacles.clear();
+            lines[i].segments.get(0).coins.clear();
+        }
     }
 
     float computeWidth(){
@@ -52,11 +53,11 @@ class LineManager{
         return drawX + drawX * r.nextFloat();
     }
 
-    void update(){
+    void update(double deltaTime){
         boolean add[] = {false, false, false};
 
         for(int i =0; i < 3; i++){
-            lines[i].update(alignOffsetChange);
+            lines[i].update(alignOffsetChange, deltaTime);
             add[i] = lines[i].add();
         }
 
@@ -69,7 +70,7 @@ class LineManager{
     }
 
     void draw(Canvas canvas){
-        canvas.drawPaint(p); 
+        canvas.drawColor(Color.BLACK);
         for(Line l : lines){
             l.draw(canvas);
         }
@@ -78,63 +79,10 @@ class LineManager{
 
 
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
-
-    class MyGestureListener implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
-
-        @Override
-        public boolean onDown(MotionEvent motionEvent) {
-            player.jump();
-            return true;
-        }
-
-        @Override
-        public void onShowPress(MotionEvent e) {
-
-        }
-
-        @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
-        {
-            return true;
-        }
-
-        @Override
-        public boolean onSingleTapUp(MotionEvent e)
-        {
-            return true;
-        }
-
-        @Override
-        public void onLongPress(MotionEvent e){
-
-        }
-
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            return true;
-        }
-
-        @Override
-        public boolean onSingleTapConfirmed(MotionEvent e) {
-            return true;
-        }
-
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-            return true;
-        }
-
-        @Override
-        public boolean onDoubleTapEvent(MotionEvent e) {
-            return true;
-        }
-    }
     LineManager manager;
     Player player;
     Context context;
     MainThread thread;
-    GestureDetectorCompat gestureDetector;
-    MyGestureListener listener;
     static int drawY = 1184;
     static int drawX = 720;
     float scaleX;
@@ -142,11 +90,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     public GamePanel(Context con) {
         super(con);
         context = con;
-        listener = new MyGestureListener();
-        gestureDetector = new GestureDetectorCompat(context, listener);
-        gestureDetector.setOnDoubleTapListener(listener);
         //add callback to surface to intercept events
         getHolder().addCallback(this);
+        restart();
 
         thread = new MainThread(getHolder(), this);
         setFocusable(true);
@@ -177,10 +123,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder holder)  {
-        restart();
-
         Canvas c;
         c = getHolder().lockCanvas();
+        c.scale(scaleX, scaleY);
         scaleX = c.getWidth() / (float)drawX;
         scaleY = c.getHeight() / (float)drawY;
         //here you can pass canvas
@@ -192,16 +137,15 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        this.gestureDetector.onTouchEvent(event);
-        if(event.getAction() == MotionEvent.ACTION_UP){
-
+        if(event.getAction() == MotionEvent.ACTION_DOWN){
+            player.jump();
         }
         return true;
     }
 
-    public void update() {
-        manager.update();
-        player.update(manager.lines);
+    public void update(double deltaTime) {
+        manager.update(deltaTime);
+        player.update(manager.lines, deltaTime);
         if(player.dead){
             restart();
         }
@@ -211,11 +155,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     public void draw(Canvas canvas){
         super.draw(canvas);
         if(canvas != null){
-            canvas.save();
-            canvas.scale(scaleX, scaleY);
             manager.draw(canvas);
             player.draw(canvas);
-            canvas.restore();
         }
     }
 

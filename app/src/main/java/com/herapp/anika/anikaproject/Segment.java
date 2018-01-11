@@ -19,7 +19,7 @@ public class Segment {
         PointF pos; //this is rect left bottom corner
         float width = 50;
         float height = 100;
-        PointF collisionPoints[] = new PointF[4]; //left top, left bot, right top, right bot
+        PointF collisionPoints[] = new PointF[8]; //left top, left bot, right top, right bot middle top right bot left
         PointF newW = new PointF();    //used for computing new collision points
         PointF newH = new PointF();
         Path path = new Path();
@@ -47,19 +47,19 @@ public class Segment {
             collisionPoints[1] = Vec.getCopy(pos);
             collisionPoints[2] = Vec.getAdded(pos, Vec.getAdded(newW, newH));
             collisionPoints[3] = Vec.getAdded(pos, newW);
+            collisionPoints[4] = Vec.getAdded(collisionPoints[0], Vec.getDivided(newW, 2));
+            collisionPoints[5] = Vec.getAdded(collisionPoints[3], Vec.getDivided(newH, 2));
+            collisionPoints[6] = Vec.getAdded(pos, Vec.getDivided(newW, 2));
+            collisionPoints[7] = Vec.getAdded(pos, Vec.getDivided(newH, 2));
         }
 
         void update(){
-            Vec.addVec(pos, vel);
-            path.offset(vel.x, vel.y);
+            Vec.addVec(pos, deltaVel);
+            path.offset(deltaVel.x, deltaVel.y);
         }
 
         void draw(Canvas canvas){
             if(pos.x > -70 && pos.x < drawX){
-//                canvas.save();
-//                canvas.rotate((float)Math.toDegrees(-angle), pos.x, pos.y);
-//                canvas.drawRect(pos.x,pos.y - height, pos.x + width, pos.y, obstaclePaint);
-//                canvas.restore();
                 canvas.drawPath(path, obstaclePaint);
             }   
         }
@@ -70,11 +70,12 @@ public class Segment {
     private float cosAngle;
     PointF pos;
     PointF vel;
+    PointF deltaVel = new PointF();
     PointF alignment;
     ArrayList <Obstacle> obstacles= new ArrayList<>();
     Paint p = new Paint();
     private Paint obstaclePaint = new Paint();
-    private ArrayList <Coin> coins = new ArrayList<>();
+    ArrayList <Coin> coins = new ArrayList<>();
 
     Segment(PointF pos, PointF alignment, float width){
         Random random = new Random();
@@ -116,25 +117,24 @@ public class Segment {
 
     private void addCoin(){
         Random r = new Random();
-        boolean finished = false;
-        PointF coinPoint = new PointF();
-        while(!finished){
-            int bound = 20;
-            int div = r.nextInt(bound);
-            coinPoint = Vec.getCopy(alignment);
-            Vec.divide(coinPoint, bound);
-            Vec.mult(coinPoint, div);
-            Vec.addVec(coinPoint, pos);
-            finished = true;
-            for(Obstacle o : obstacles){
-                o.computeCollisionPoints();
-                if(Vec.distance(coinPoint, o.collisionPoints[1]) < o.width + 20 && Vec.distance(coinPoint, o.collisionPoints[3]) < o.width + 20)
-                    finished = false;
-            }
+        boolean finished = true;
+        PointF coinPoint;
+        int bound = 20;
+        int div = r.nextInt(bound);
+        coinPoint = Vec.getCopy(alignment);
+        Vec.divide(coinPoint, bound);
+        Vec.mult(coinPoint, div);
+        Vec.addVec(coinPoint, pos);
+        for(Obstacle o : obstacles){
+            o.computeCollisionPoints();
+            if(Vec.distance(coinPoint, o.collisionPoints[1]) < o.width + 20 && Vec.distance(coinPoint, o.collisionPoints[3]) < o.width + 20)
+                finished = false;
         }
-        Coin coin = new Coin(coinPoint);
-        coin.pos.y -= coin.radius * 3;
-        coins.add(coin);
+        if(finished) {
+            Coin coin = new Coin(coinPoint);
+            coin.pos.y -= coin.radius * 3;
+            coins.add(coin);
+        }
     }
 
     PointF getLastPoint(){
@@ -149,14 +149,15 @@ public class Segment {
         vel.y *= -speed;
     }
 
-    void update(){
+    void update(double deltaTime){
+        deltaVel = Vec.getMult(vel, (float)deltaTime);
         for(Obstacle o : obstacles){
             o.update();
         }
         for(Coin c : coins){
-            c.update(vel);
+            c.update(deltaVel);
         }
-        Vec.addVec(pos, vel);
+        Vec.addVec(pos, deltaVel);
     }
 
     void draw(Canvas canvas) {
