@@ -31,7 +31,7 @@ public class MainThread extends Thread{
 
             double dt = (curTime - prevTime) / 100;
             if(dt > 0.22)
-                dt = 22;
+                dt = 0.22;
 
             canvas = null;
             //try the canvas

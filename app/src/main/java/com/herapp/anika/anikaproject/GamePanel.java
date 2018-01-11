@@ -26,12 +26,9 @@ import static com.herapp.anika.anikaproject.GamePanel.drawY;
 class LineManager{
     Line lines[] = new Line[3];
     private static float alignOffset = 200;
-    private float alignOffsetChange = 0.025f * 120;
-    static Paint p = new Paint();
+    private float alignOffsetChange = 0.05f;
 
     LineManager(){
-        p.setColor(Color.BLACK);
-        p.setStyle(Paint.Style.FILL);
         PointF[] endPoints = new PointF[3];
         endPoints[0] = new PointF(drawX, (float)drawY / 4.f + alignOffset);
         endPoints[1] = new PointF(drawX, (float)drawY / 2.f + alignOffset);
@@ -69,7 +66,7 @@ class LineManager{
     }
 
     void draw(Canvas canvas){
-        canvas.drawPaint(p); 
+        canvas.drawColor(Color.BLACK);
         for(Line l : lines){
             l.draw(canvas);
         }
@@ -78,48 +75,10 @@ class LineManager{
 
 
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
-
-    class MyGestureListener implements GestureDetector.OnGestureListener {
-
-        @Override
-        public boolean onDown(MotionEvent motionEvent) {
-            player.jump();
-            return true;
-        }
-
-        @Override
-        public void onShowPress(MotionEvent e) {
-
-        }
-
-        @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
-        {
-            return true;
-        }
-
-        @Override
-        public boolean onSingleTapUp(MotionEvent e)
-        {
-            return true;
-        }
-
-        @Override
-        public void onLongPress(MotionEvent e){
-
-        }
-
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            return true;
-        }
-    }
     LineManager manager;
     Player player;
     Context context;
     MainThread thread;
-    GestureDetectorCompat gestureDetector;
-    MyGestureListener listener;
     static int drawY = 1184;
     static int drawX = 720;
     float scaleX;
@@ -127,8 +86,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     public GamePanel(Context con) {
         super(con);
         context = con;
-        listener = new MyGestureListener();
-        gestureDetector = new GestureDetectorCompat(context, listener);
         //add callback to surface to intercept events
         getHolder().addCallback(this);
         restart();
@@ -176,9 +133,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        this.gestureDetector.onTouchEvent(event);
-        if(event.getAction() == MotionEvent.ACTION_UP){
-
+        if(event.getAction() == MotionEvent.ACTION_DOWN){
+            player.jump();
         }
         return true;
     }

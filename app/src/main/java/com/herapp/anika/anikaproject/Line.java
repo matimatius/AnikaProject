@@ -30,7 +30,7 @@ public class Line {
     }
 
     private void computeSpeed(){
-        speed = (pos.y - endPoint.y) / 40.f * 120;
+        speed = (pos.y - endPoint.y) / 10.f;
     }
 
     Line(PointF pos, PointF endPoint){
