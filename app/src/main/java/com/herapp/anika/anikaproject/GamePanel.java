@@ -178,7 +178,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceCreated(SurfaceHolder holder)  {
         restart();
-
         Canvas c;
         c = getHolder().lockCanvas();
         scaleX = c.getWidth() / (float)drawX;
