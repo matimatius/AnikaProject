@@ -81,7 +81,7 @@ public class Segment {
     ArrayList <Obstacle> obstacles= new ArrayList<>();
     Paint p = new Paint();
     private Paint obstaclePaint = new Paint();
-    private ArrayList <Coin> coins = new ArrayList<>();
+    ArrayList <Coin> coins = new ArrayList<>();
 
     Segment(PointF pos, PointF alignment, float width){
         Random random = new Random();

@@ -40,8 +40,12 @@ class LineManager{
 
         lines[0] = new Line(startPoints[0], endPoints[0]);
         lines[1] = new Line(startPoints[1], endPoints[1]);
-        lines[1].segments.get(0).obstacles.clear();
         lines[2] = new Line(startPoints[2], endPoints[2]);
+
+        for(int i =0; i < 3; i++){
+            lines[i].segments.get(0).obstacles.clear();
+            lines[i].segments.get(0).coins.clear();
+        }
     }
 
     float computeWidth(){
